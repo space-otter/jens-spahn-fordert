@@ -1,0 +1,73 @@
+---
+import { css } from "../../styled-system/css";
+import source from "../data/demands.json";
+
+const { demands: d } = source;
+const demands = d.slice(0, 3);
+---
+
+<ul
+  class={css({
+    display: "flex",
+    flexDirection: "column",
+    gap: "5rem",
+    paddingBlockStart: "10rem",
+  })}
+>
+  {
+    demands.map((demand, index) => {
+      return (
+        <li
+          class={css({
+            maxInlineSize: "32rem",
+
+            "&:nth-child(even)": {
+              marginInlineStart: "auto",
+            },
+          })}
+        >
+          <div>
+            {/*               <time
+                class={css({
+                  color: "white",
+                })}
+              >
+                {new Date(demand.stated).toLocaleDateString("de-DE", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })}
+              </time> */}
+            <span
+              class={css({
+                color: "white",
+                fontWeight: 500,
+                fontSize: "sm",
+              })}
+            >
+              #{demands.length - index}
+            </span>
+            <h2
+              class={css({
+                fontSize: "md",
+                color: "white",
+                lineHeight: 1.125,
+                paddingBlock: "0.25em 0.5em",
+              })}
+            >
+              <a href={demand.source}>{demand.title}</a>
+            </h2>
+            <p
+              class={css({
+                maxInlineSize: "42ch",
+                fontWeight: 500,
+              })}
+            >
+              {demand.summary}
+            </p>
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>
