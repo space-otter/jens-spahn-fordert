@@ -29,7 +29,7 @@ export const filterTitle = css({
 	color: "#00081A",
 
 	fontFamily: "boska",
-	fontSize: "clamp(2.0736rem, 1.8493rem + 1.1216vw, 2.7466rem)",
+	fontSize: "clamp(2.0736rem, 0.8899rem + 4.5092vw, 4.4973rem)",
 	fontWeight: 500,
 	lineHeight: "1.125",
 	textAlign: "center",

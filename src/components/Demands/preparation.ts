@@ -36,7 +36,24 @@ export function Demands(demands: DemandsDTO) {
 	})) satisfies Array<Demand>;
 }
 
-export function Filters(demands: Array<Demand>) {
+export function YearFilters(demands: Array<Demand>) {
+	const years = demands
+		.map((demand) => demand.stated.getFullYear())
+		.filter(isUnique)
+		.map((year) => {
+			const filter = createDateFilter(year);
+			return {
+				label: year.toString(),
+				title: `Alle Forderungen aus ${year}`,
+				matches: filter(demands).length,
+				filter,
+			};
+		});
+
+	return years satisfies Array<Filter>;
+}
+
+export function TagFilters(demands: Array<Demand>) {
 	const all = { label: "Alle", title: "Alle Forderungen im Überblick", matches: demands.length, filter: () => demands };
 
 	const tags = demands
@@ -52,20 +69,7 @@ export function Filters(demands: Array<Demand>) {
 			};
 		});
 
-	const years = demands
-		.map((demand) => demand.stated.getFullYear())
-		.filter(isUnique)
-		.map((year) => {
-			const filter = createDateFilter(year);
-			return {
-				label: year.toString(),
-				title: `Alle Forderungen aus ${year}`,
-				matches: filter(demands).length,
-				filter,
-			};
-		});
-
-	return [all, ...years, ...tags] satisfies Array<Filter>;
+	return [all, ...tags] satisfies Array<Filter>;
 }
 
 function createTagFilter(tag: string) {

@@ -1,19 +1,121 @@
 import { createSignal, type Component } from "solid-js";
 import { For } from "solid-js/web";
 import * as styles from "./styles";
-import { Filters as FilterOptions, Demands, type Filter } from "./preparation";
+import { YearFilters, TagFilters, Demands, type Filter } from "./preparation";
 import source from "../../infrastructure/demands/static-data.json";
+import { css } from "../../../styled-system/css";
 
 const demands = Demands(source);
-const filters = () => FilterOptions(demands);
-const [filter, setFilter] = createSignal<Filter>(filters()[0]);
+const tagFilters = () => TagFilters(demands);
+const yearFilters = () => YearFilters(demands);
+const [filter, setFilter] = createSignal<Filter>(tagFilters()[0]);
+
+const TimeLine: Component = () => {
+  return (
+    <div
+      class={css({
+        position: "relative",
+        _before: {
+          pointerEvents: "none",
+          zIndex: 1,
+          content: '""',
+          position: "absolute",
+          top: "0",
+          left: "0",
+          blockSize: "100%",
+          inlineSize: "4rem",
+          backgroundImage: "linear-gradient(to right, #F4F8F8, transparent)",
+        },
+        _after: {
+          pointerEvents: "none",
+          content: '""',
+          position: "absolute",
+          top: "0",
+          right: "0",
+          blockSize: "100%",
+          inlineSize: "4rem",
+          backgroundImage: "linear-gradient(to left, #F4F8F8, transparent)",
+        },
+      })}
+    >
+      <ol
+        class={css({
+          color: "blue",
+          display: "flex",
+          gap: "2.5rem",
+          overflowX: "auto",
+          inlineSize: "max-content",
+          paddingInline: "4rem",
+          alignItems: "flex-end",
+          maxInlineSize: "100%",
+          marginInline: "auto",
+        })}
+      >
+        <For each={yearFilters()}>
+          {(year) => (
+            <li data-selected={filter()?.label === year.label}>
+              <button
+                class={css({
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontWeight: 500,
+
+                  "li[data-selected=false] &": {
+                    opacity: 0.5,
+                  },
+                })}
+                type="button"
+                onClick={() => setFilter(year)}
+              >
+                <div
+                  class={css({
+                    display: "flex",
+                    flexDirection: "column-reverse",
+                    position: "relative",
+                  })}
+                >
+                  <For
+                    each={new Array(Math.round(year.matches / 2)).fill(
+                      year.matches
+                    )}
+                  >
+                    {(matches, index) => (
+                      <div
+                        style={{
+                          transform: `translateY(${index() * 1}rem)`,
+                          "inline-size": "max-content",
+                        }}
+                      >
+                        <img
+                          class={css({
+                            width: "60px",
+                            height: "26px",
+                            objectFit: "contain",
+                          })}
+                          src="/logo.png"
+                          alt=""
+                        />
+                      </div>
+                    )}
+                  </For>
+                </div>
+                <span>{year.label}</span>
+              </button>
+            </li>
+          )}
+        </For>
+      </ol>
+    </div>
+  );
+};
 
 const Filters: Component = () => {
   return (
     <div class={styles.filterSection}>
-      <h2 class={styles.filterTitle}>{filter().title}</h2>
       <menu class={styles.filters}>
-        <For each={filters()}>
+        <For each={tagFilters()}>
           {(category) => (
             <li data-selected={filter()?.label === category.label}>
               <button
@@ -38,7 +140,15 @@ export const List: Component = () => {
   return (
     <div class={styles.sectionWrapper}>
       <section class={styles.section}>
-        <Filters />
+        <div
+          class={css({
+            paddingBlockEnd: "3rem",
+          })}
+        >
+          <TimeLine />
+          <Filters />
+        </div>
+        <h2 class={styles.filterTitle}>{filter().title}</h2>
         <ul class={styles.demands}>
           <For each={filteredDemands()}>
             {(demand, index) => (
